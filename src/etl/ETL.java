@@ -1,39 +1,89 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package etl;
 
+import javax.swing.*;
+import javax.swing.text.DefaultCaret;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 /**
- *
- * @author lenovo
+ * Created by Daniel K on 2017-10-28.
  */
-public class ETL {
+public class ETL extends JFrame implements ActionListener{
+    private JTextField product;
+    private JTextArea result;
+    private JButton extract, transform, load;
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws IOException {
-        Document doc = Jsoup.connect("https://www.ceneo.pl/47629930/opinie-2")
-                .header("Accept-Encoding", "gzip, deflate")
-                .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
-                .maxBodySize(0)
-                .timeout(600000)
-                .get();
+    public ETL(){
+        setTitle("CENEO.PL ETL Process");
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        Elements html = doc.getAllElements();
+        product = new JTextField(10);
+        result = new JTextArea(15,100);
+        extract = new JButton("Extract");
+        transform = new JButton("Transform");
+        load = new JButton("Load");
 
-        for (Element e : html){
-            System.out.println(e.html());
+        JPanel searchPanel = new JPanel();
+        JPanel operationPanel = new JPanel();
+        JScrollPane resultPanel = new JScrollPane(result);
+
+        extract.addActionListener(this);
+        transform.addActionListener(this);
+        load.addActionListener(this);
+
+        resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        resultPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        result.setLineWrap(true);
+        result.setWrapStyleWord(true);
+        result.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) result.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        resultPanel.setViewportView(result);
+
+        searchPanel.add(new JLabel("Product ID:"));
+        searchPanel.add(product);
+        operationPanel.add(extract);
+        operationPanel.add(transform);
+        operationPanel.add(load);
+
+        add(searchPanel, BorderLayout.NORTH);
+        add(resultPanel, BorderLayout.CENTER);
+        add(operationPanel, BorderLayout.SOUTH);
+
+        pack();
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("Extract")){
+            //TODO
+            try {
+                String answer = Extract.extract("https://www.google.pl/?gfe_rd=cr&dcr=0&ei=PMn0We-jGKHi8AfK7p3wCA&gws_rd=ssl");
+
+                result.setText(answer);
+            } catch (IOException event){
+                event.printStackTrace();
+            }
+        }
+        if(e.getActionCommand().equals("Transform")){
+            //TODO
+        }
+        if(e.getActionCommand().equals("Load")){
+            //TODO
         }
     }
-    
+
+    public static void main(String[] args) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new ETL();
+            }
+        }).run();
+    }
 }
