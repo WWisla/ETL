@@ -17,17 +17,26 @@ public class Extract{
                 .header("Accept-Encoding", "gzip, deflate")
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                 .maxBodySize(0)
-                .timeout(600000)
+                .timeout(6000)
                 .get();
-
+        /**
         Elements html = doc.getAllElements();
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
+
 
         for (Element e : html){
-            result += e.html();
-        }
+            result.append(e.html());
+        }*/
 
-        return result;
+        return doc.html();
+    }
+
+    public static String convertToXHTML(String html){
+        Document doc = Jsoup.parse(html);
+
+        doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+
+        return doc.html();
     }
 }

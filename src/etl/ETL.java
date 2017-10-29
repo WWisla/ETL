@@ -5,7 +5,9 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Created by Daniel K on 2017-10-28.
@@ -61,12 +63,27 @@ public class ETL extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("Extract")){
-            //TODO
-            try {
-                String answer = Extract.extract("https://www.google.pl/?gfe_rd=cr&dcr=0&ei=PMn0We-jGKHi8AfK7p3wCA&gws_rd=ssl");
+            String url = "https://www.ceneo.pl/" + product.getText() + "#tab=reviews";
+            String html = "";
 
-                result.setText(answer);
+            try {
+                html = Extract.extract(url); //"https://www.ceneo.pl/47629930#tab=reviews"
+
+                result.setText(html);
             } catch (IOException event){
+                event.printStackTrace();
+            }
+
+            try {
+                PrintWriter extract = new PrintWriter("extract.xml");
+
+                String xml = Extract.convertToXHTML(html);
+                
+                extract.print(xml);
+
+                extract.close();
+            }
+            catch (FileNotFoundException event){
                 event.printStackTrace();
             }
         }
