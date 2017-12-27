@@ -1,5 +1,8 @@
 package etl;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
@@ -8,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 /**
  * Created by Daniel K on 2017-10-28.
@@ -16,6 +20,7 @@ public class ETL extends JFrame implements ActionListener{
     private JTextField product;
     private JTextArea result;
     private JButton extract, transform, load;
+    private ArrayList<Document> docList = new ArrayList<>();
 
     public ETL(){
         setTitle("CENEO.PL ETL Process");
@@ -56,6 +61,8 @@ public class ETL extends JFrame implements ActionListener{
         add(resultPanel, BorderLayout.CENTER);
         add(operationPanel, BorderLayout.SOUTH);
 
+        product.setText("56435526");//56435526
+
         pack();
         setVisible(true);
     }
@@ -64,12 +71,41 @@ public class ETL extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("Extract")){
             String url = "https://www.ceneo.pl/" + product.getText() + "#tab=reviews";
-            String html = "";
+            //String html = "";
+            Document tempDoc;
 
             try {
-                html = Extract.extract(url); //"https://www.ceneo.pl/47629930#tab=reviews"
+                //html = Extract.extract(url); //"https://www.ceneo.pl/47629930#tab=reviews"
 
-                result.setText(html);
+                Document doc = Extract.extractDocument(url);
+
+                tempDoc = doc;
+
+                docList.add(doc);
+
+                int i = 1;
+
+                while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
+
+                    i++;
+
+                    for (Element element : tempDoc.select("li")) {
+                        if (element.hasClass("page-arrow arrow-next")) {
+                            Element next = element.select("a").first();
+                            try {
+                                tempDoc = Extract.extractDocument("https://www.ceneo.pl" + next.attr("href"));
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                            System.out.println(next.attr("href"));
+                            docList.add(tempDoc);
+                        }
+                    }
+                            System.out.println(i);
+                }
+                for(Document document : docList) {
+                    result.append(document.html());
+                }
             } catch (IOException event){
                 event.printStackTrace();
             }
@@ -77,18 +113,24 @@ public class ETL extends JFrame implements ActionListener{
             try {
                 PrintWriter extract = new PrintWriter("extract.xml");
 
-                String xml = Extract.convertToXHTML(html);
-                
-                extract.print(xml);
+                for(Document doc : docList){
+                    String xml = Extract.convertToXHTML(doc.html());
+
+                    extract.print(xml);
+                    extract.print("\r\n");
+                }
 
                 extract.close();
             }
             catch (FileNotFoundException event){
                 event.printStackTrace();
             }
+            catch (NullPointerException event){
+                event.printStackTrace();
+            }
         }
         if(e.getActionCommand().equals("Transform")){
-            //TODO
+            Transform.transform(docList);
         }
         if(e.getActionCommand().equals("Load")){
             //TODO
