@@ -8,9 +8,16 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +28,7 @@ public class ETL extends JFrame implements ActionListener{
     private JTextArea result;
     private JButton extract, transform, load;
     private ArrayList<Document> docList = new ArrayList<>();
+    private StringBuilder test = new StringBuilder();
 
     public ETL(){
         setTitle("CENEO.PL ETL Process");
@@ -61,7 +69,7 @@ public class ETL extends JFrame implements ActionListener{
         add(resultPanel, BorderLayout.CENTER);
         add(operationPanel, BorderLayout.SOUTH);
 
-        product.setText("56435526");//56435526
+        product.setText("47629930");//56435526
 
         pack();
         setVisible(true);
@@ -83,49 +91,87 @@ public class ETL extends JFrame implements ActionListener{
 
                 docList.add(doc);
 
-                int i = 1;
-
                 while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
-
-                    i++;
-
                     for (Element element : tempDoc.select("li")) {
                         if (element.hasClass("page-arrow arrow-next")) {
                             Element next = element.select("a").first();
                             try {
-                                tempDoc = Extract.extractDocument("https://www.ceneo.pl" + next.attr("href"));
+                                if(next.attr("href").contains("opinie")) {
+                                    tempDoc = Extract.extractDocument("https://www.ceneo.pl" + next.attr("href"));
+                                    System.out.println(next.attr("href"));
+                                }
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             }
-                            System.out.println(next.attr("href"));
                             docList.add(tempDoc);
                         }
                     }
-                            System.out.println(i);
                 }
+                /**
                 for(Document document : docList) {
-                    result.append(document.html());
+                    //TODO cant display a lot of signs in JTextArea
+                    //result.append(document.html());
+                    test.append(document.toString() + "\r\n");
                 }
+
+                System.out.println(test.length());
+                 */
+
             } catch (IOException event){
                 event.printStackTrace();
             }
 
             try {
-                PrintWriter extract = new PrintWriter("extract.xml");
+                String fileName = "extract.xml";
+
+                PrintWriter extract = new PrintWriter(fileName);
 
                 for(Document doc : docList){
                     String xml = Extract.convertToXHTML(doc.html());
 
                     extract.print(xml);
-                    extract.print("\r\n");
+                    if(!doc.equals(docList.get(docList.size()-1))) {
+                        extract.print("\r\n\r\n");
+                    }
                 }
 
                 extract.close();
+
+                System.out.println("Zapisano do pliku " + fileName);
             }
             catch (FileNotFoundException event){
                 event.printStackTrace();
             }
             catch (NullPointerException event){
+                event.printStackTrace();
+            }
+
+            //TODO use FileChannel to append big file
+            try {
+                Path path = Paths.get("extract.xml");
+                FileChannel fileChannel = FileChannel.open(path);
+
+                ByteBuffer buffer = ByteBuffer.allocate(100000);
+                int bytesRead = fileChannel.read(buffer);
+
+                while (bytesRead != -1) {
+                    buffer.flip();
+
+                    while (buffer.hasRemaining()) {
+                        //TODO find way to append buffer to JTextArea
+                        synchronized (buffer) {
+                            test.append((char) buffer.get());
+                        }
+                    }
+                    System.out.println(fileChannel.position());
+                    buffer.clear();
+                    bytesRead = fileChannel.read(buffer);
+                }
+                result.append(test.toString());
+                System.out.println("DONE");
+                fileChannel.close();
+            }
+            catch (IOException event){
                 event.printStackTrace();
             }
         }
