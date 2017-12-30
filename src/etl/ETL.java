@@ -25,7 +25,7 @@ public class ETL extends JFrame implements ActionListener{
     private JTextArea result;
     private JButton extract, transform, load;
     private ArrayList<Document> docList = new ArrayList<>();
-    private StringBuilder test = new StringBuilder();;
+    private StringBuilder html = new StringBuilder();;
 
     public ETL(){
         //window GUI settings
@@ -50,7 +50,7 @@ public class ETL extends JFrame implements ActionListener{
         transform.addActionListener(this);
         load.addActionListener(this);
 
-        //log panel settings
+        //result panel settings
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         resultPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -95,7 +95,7 @@ public class ETL extends JFrame implements ActionListener{
             docList.clear();
 
             //clear text buffer needed to display text in GUI
-            test.setLength(0);
+            html.setLength(0);
 
             try {
                 //parse html site
@@ -177,7 +177,7 @@ public class ETL extends JFrame implements ActionListener{
                     while (buffer.hasRemaining()) {
                         synchronized (buffer) {
                             //load sign to string builder
-                            test.append((char) buffer.get());
+                            html.append((char) buffer.get());
                         }
                     }
                     System.out.println(fileChannel.position());
@@ -186,7 +186,7 @@ public class ETL extends JFrame implements ActionListener{
                     bytesRead = fileChannel.read(buffer);
                 }
                 //display loaded file in GUI
-                result.append(test.toString());
+                result.append(html.toString());
                 System.out.println("DONE");
 
                 //close file channel

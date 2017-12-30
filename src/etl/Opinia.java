@@ -7,13 +7,13 @@ import org.jsoup.nodes.Element;
  */
 public class Opinia{
     //contain full review html code
-    private Element opinia;
+    private Element review;
 
-    public Opinia(Element opinia){
-        this.opinia = opinia;
+    public Opinia(Element review){
+        this.review = review;
     }
 
     public String outerHtml(){
-        return opinia.outerHtml();
+        return review.outerHtml();
     }
 }

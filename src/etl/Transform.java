@@ -12,27 +12,27 @@ import java.util.ArrayList;
  * Created by Daniel K on 2017-10-28.
  */
 public class Transform {
-    private static ArrayList<Opinia> opinie = new ArrayList<>();
+    private static ArrayList<Opinia> reviews = new ArrayList<>();
 
     public static void transform(ArrayList<Document> docList){
         //clear list before transform
-        opinie.clear();
+        reviews.clear();
         int i = 1;
         for (Document doc : docList) {
             //search for reviews only
-            Elements opinia = doc.select("li");
+            Elements review = doc.select("li");
 
-            for (Element element : opinia) {
+            for (Element element : review) {
                 if (element.hasClass("review-box js_product-review")) {
                     //add review to list
-                    opinie.add(new Opinia(element));
+                    reviews.add(new Opinia(element));
                     System.out.println(element.outerHtml());
                     System.out.println(i);
                     i++;
                 }
             }
         }
-        //System.out.println(opinie.size());
+        //System.out.println(reviews.size());
 
         try {
             //create new file for opinions
@@ -40,10 +40,10 @@ public class Transform {
 
             PrintWriter transform = new PrintWriter(fileName);
 
-            for(Opinia opinia : opinie){
+            for(Opinia review : reviews){
                 //save reviews to file
-                transform.print(opinia.outerHtml());
-                if(!opinia.equals(opinie.get(opinie.size()-1))) {
+                transform.print(review.outerHtml());
+                if(!review.equals(reviews.get(reviews.size()-1))) {
                     //if its last review not needed to add 2 new lines
                     transform.print("\r\n\r\n");
                 }
