@@ -25,27 +25,32 @@ public class ETL extends JFrame implements ActionListener{
     private JTextArea result;
     private JButton extract, transform, load;
     private ArrayList<Document> docList = new ArrayList<>();
-    private StringBuilder test = new StringBuilder();
+    private StringBuilder test = new StringBuilder();;
 
     public ETL(){
+        //window GUI settings
         setTitle("CENEO.PL ETL Process");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        //GUI components
         product = new JTextField(10);
         result = new JTextArea(15,100);
         extract = new JButton("Extract");
         transform = new JButton("Transform");
         load = new JButton("Load");
 
+        //GUI panels
         JPanel searchPanel = new JPanel();
         JPanel operationPanel = new JPanel();
         JScrollPane resultPanel = new JScrollPane(result);
 
+        //button listeners
         extract.addActionListener(this);
         transform.addActionListener(this);
         load.addActionListener(this);
 
+        //log panel settings
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         resultPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -56,82 +61,96 @@ public class ETL extends JFrame implements ActionListener{
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         resultPanel.setViewportView(result);
 
+        //adding GUI components to panels
         searchPanel.add(new JLabel("Product ID:"));
         searchPanel.add(product);
         operationPanel.add(extract);
         operationPanel.add(transform);
         operationPanel.add(load);
 
+        //adding GUI panels to window
         add(searchPanel, BorderLayout.NORTH);
         add(resultPanel, BorderLayout.CENTER);
         add(operationPanel, BorderLayout.SOUTH);
 
+        //default product number - for test purpose only
         product.setText("47629930");//56435526
 
+        //resize window to used by components size and enable visibility
         pack();
         setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        //Extract button action
         if(e.getActionCommand().equals("Extract")){
+            //create ceneo.pl url with product number to extract reviews
             String url = "https://www.ceneo.pl/" + product.getText() + "#tab=reviews";
-            //String html = "";
+
+            //temporary doc to keep html code in it
             Document tempDoc;
 
+            //clear list for extracted html docs
+            docList.clear();
+
+            //clear text buffer needed to display text in GUI
+            test.setLength(0);
+
             try {
-                //html = Extract.extract(url); //"https://www.ceneo.pl/47629930#tab=reviews"
+                //parse html site
+                Document doc = Extract.extractDocument(url); //"https://www.ceneo.pl/47629930#tab=reviews"
 
-                Document doc = Extract.extractDocument(url);
-
+                //save parsed site to temporary document
                 tempDoc = doc;
 
+                //add to list of documents from this extract
                 docList.add(doc);
 
+                //search in temp doc for next review site link
                 while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
                     for (Element element : tempDoc.select("li")) {
+                        //if next site link exist catch it to temporary element
                         if (element.hasClass("page-arrow arrow-next")) {
                             Element next = element.select("a").first();
                             try {
+                                //choose this links which contains reviews only
                                 if(next.attr("href").contains("opinie")) {
+                                    //extract next site of reviews
                                     tempDoc = Extract.extractDocument("https://www.ceneo.pl" + next.attr("href"));
                                     System.out.println(next.attr("href"));
                                 }
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             }
+                            //add extracted site to list and check for next ones
                             docList.add(tempDoc);
                         }
                     }
                 }
-                /**
-                for(Document document : docList) {
-                    //TODO cant display a lot of signs in JTextArea
-                    //result.append(document.html());
-                    test.append(document.toString() + "\r\n");
-                }
-
-                System.out.println(test.length());
-                 */
-
             } catch (IOException event){
                 event.printStackTrace();
             }
 
             try {
+                //create new file named below
                 String fileName = "extract.xml";
 
                 PrintWriter extract = new PrintWriter(fileName);
 
                 for(Document doc : docList){
+                    //convert html of each doc to xhtml and save to file
                     String xml = Extract.convertToXHTML(doc.html());
 
                     extract.print(xml);
+                    //if its last parsed document not needed to add 2 new lines
                     if(!doc.equals(docList.get(docList.size()-1))) {
+                        //2 new lines between each html code
                         extract.print("\r\n\r\n");
                     }
                 }
 
+                //close file
                 extract.close();
 
                 System.out.println("Zapisano do pliku " + fileName);
@@ -139,33 +158,38 @@ public class ETL extends JFrame implements ActionListener{
             catch (FileNotFoundException event){
                 event.printStackTrace();
             }
-            catch (NullPointerException event){
-                event.printStackTrace();
-            }
 
-            //TODO use FileChannel to append big file
             try {
+                //connect file channel to enable fast load big files or containing
+                //a lot of signs to display it on GUI - without it loading is never ending story
                 Path path = Paths.get("extract.xml");
                 FileChannel fileChannel = FileChannel.open(path);
 
+                //allocate buffer - number of bytes in memory
                 ByteBuffer buffer = ByteBuffer.allocate(100000);
                 int bytesRead = fileChannel.read(buffer);
 
+                //read file until end - end throw exception (-1)
                 while (bytesRead != -1) {
                     buffer.flip();
 
+                    //load signs one by one
                     while (buffer.hasRemaining()) {
-                        //TODO find way to append buffer to JTextArea
                         synchronized (buffer) {
+                            //load sign to string builder
                             test.append((char) buffer.get());
                         }
                     }
                     System.out.println(fileChannel.position());
+                    //clear buffer - again allocated number and load again
                     buffer.clear();
                     bytesRead = fileChannel.read(buffer);
                 }
+                //display loaded file in GUI
                 result.append(test.toString());
                 System.out.println("DONE");
+
+                //close file channel
                 fileChannel.close();
             }
             catch (IOException event){
@@ -181,6 +205,7 @@ public class ETL extends JFrame implements ActionListener{
     }
 
     public static void main(String[] args) {
+        //strat GUI in new thread
         new Thread(new Runnable() {
             @Override
             public void run() {
