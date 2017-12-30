@@ -26,8 +26,8 @@ public class Transform {
                 if (element.hasClass("review-box js_product-review")) {
                     //add review to list
                     reviews.add(new Opinia(element));
-                    System.out.println(element.outerHtml());
-                    System.out.println(i);
+                    //System.out.println(element.outerHtml());
+                    //System.out.println(i);
                     i++;
                 }
             }
@@ -40,14 +40,18 @@ public class Transform {
 
             PrintWriter transform = new PrintWriter(fileName);
 
+            transform.print("<reviews>\r\n");
             for(Opinia review : reviews){
                 //save reviews to file
+                transform.print("<review id=\""+ (reviews.indexOf(review)+1) +"\">\r\n");
                 transform.print(review.outerHtml());
+                transform.print("\r\n</review>");
                 if(!review.equals(reviews.get(reviews.size()-1))) {
                     //if its last review not needed to add 2 new lines
                     transform.print("\r\n\r\n");
                 }
             }
+            transform.print("\r\n</reviews>");
 
             //close file
             transform.close();
