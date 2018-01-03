@@ -6,6 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import org.jsoup.nodes.Document;
@@ -16,8 +20,9 @@ import org.jsoup.nodes.Document;
 public class ETL extends JFrame implements ActionListener{
     private JTextField product;
     private JTextArea result;
-    private JButton extract, transform, load;
+    private JButton extract, transform, load, etl;
     private ArrayList<Document> docList = new ArrayList<>();
+    private ArrayList<Opinia> reviews = new ArrayList<>();
 
     public ETL(){
         //window GUI settings
@@ -31,6 +36,7 @@ public class ETL extends JFrame implements ActionListener{
         extract = new JButton("Extract");
         transform = new JButton("Transform");
         load = new JButton("Load");
+        etl = new JButton("ETL");
 
         //GUI panels
         JPanel searchPanel = new JPanel();
@@ -41,6 +47,11 @@ public class ETL extends JFrame implements ActionListener{
         extract.addActionListener(this);
         transform.addActionListener(this);
         load.addActionListener(this);
+        etl.addActionListener(this);
+
+        //button settings
+        transform.setEnabled(false);
+        load.setEnabled(false);
 
         //result panel settings
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -91,15 +102,30 @@ public class ETL extends JFrame implements ActionListener{
 
             //display result of extract in GUI
             result.setText(Extract.extractToString());
+
+            //enable transform111
+            transform.setEnabled(true);
         }
         //Transform button action
         if(e.getActionCommand().equals("Transform")){
-            Transform.transform(docList);
+            reviews = Transform.transform(docList);
 
-            result.setText(Transform.transformToString());
+            //display result of transform in GUI
+            try {
+                result.setText(Transform.transformToString());
+            } catch (UnsupportedEncodingException e1) {
+                e1.printStackTrace();
+            }
+
+            //enable load
+            load.setEnabled(true);
         }
         //Load button action
         if(e.getActionCommand().equals("Load")){
+            //TODO
+        }
+        //ETL button action
+        if(e.getActionCommand().equals("ETL")){
             //TODO
         }
     }

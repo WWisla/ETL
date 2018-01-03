@@ -3,10 +3,9 @@ package etl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import org.jsoup.select.Elements;
 public class Transform {
     private static ArrayList<Opinia> reviews = new ArrayList<>();
 
-    public static void transform(ArrayList<Document> docList){
+    public static ArrayList<Opinia> transform(ArrayList<Document> docList){
         //clear list before transform
         reviews.clear();
         int i = 1;
@@ -64,11 +63,14 @@ public class Transform {
         catch (FileNotFoundException event){
             event.printStackTrace();
         }
+        return reviews;
     }
 
-    public static String transformToString(){
-        StringBuilder result = new StringBuilder();
+    public static String transformToString() throws UnsupportedEncodingException{
+        //StringBuilder result = new StringBuilder();
+        StringBuilder result2 = new StringBuilder();
 
+        //save result to file
         try {
             String fileName = "transform.xml";
 
@@ -76,18 +78,22 @@ public class Transform {
 
             for(Opinia review : reviews){
                 printWriter.print(review.toString());
+                //
+                result2.append(review.toString());
                 if(!review.equals(reviews.get(reviews.size()-1))) {
                     //2 new lines between each html code
+                    //
+                    result2.append("\r\n\r\n\r\n");
                     printWriter.print("\r\n\r\n\r\n");
                 }
             }
 
             printWriter.close();
         }
-        catch (FileNotFoundException e){
+        catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        /**
         try {
             //connect file channel to enable fast load big files or containing
             //a lot of signs to display it on GUI - without it loading is never ending story
@@ -95,7 +101,7 @@ public class Transform {
             FileChannel fileChannel = FileChannel.open(path);
 
             //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(100000);
+            ByteBuffer buffer = ByteBuffer.allocate(160000);
             int bytesRead = fileChannel.read(buffer);
 
             //read file until end - end throw exception (-1)
@@ -124,7 +130,7 @@ public class Transform {
         catch (IOException event){
             event.printStackTrace();
         }
-
-        return result.toString();
+        */
+        return result2.toString();
     }
 }

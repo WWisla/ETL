@@ -4,9 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -102,7 +100,7 @@ public class Extract{
             FileChannel fileChannel = FileChannel.open(path);
 
             //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(100000);
+            ByteBuffer buffer = ByteBuffer.allocate(160000);
             int bytesRead = fileChannel.read(buffer);
 
             //read file until end - end throw exception (-1)
@@ -138,6 +136,8 @@ public class Extract{
     public static String extractToString(){
         return html.toString();
     }
+
+    public static StringBuilder extractStringBuilder(){return html;}
 
     public static String convertToXHTML(String html){
         //convert html to xhtml - no more errors in syntax
