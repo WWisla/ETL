@@ -1,24 +1,19 @@
-package etl;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+package com.hd.etl;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
 /**
  * Created by Daniel K on 2017-10-28.
  */
 public class Transform {
-    private static ArrayList<Opinia> reviews = new ArrayList<>();
+    private static ArrayList<Opinia> reviews = new ArrayList<Opinia>();
 
     public static ArrayList<Opinia> transform(ArrayList<Document> docList){
         //clear list before transform
@@ -101,7 +96,7 @@ public class Transform {
             FileChannel fileChannel = FileChannel.open(path);
 
             //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(160000);
+            ByteBuffer buffer = ByteBuffer.allocate(120000);
             int bytesRead = fileChannel.read(buffer);
 
             //read file until end - end throw exception (-1)

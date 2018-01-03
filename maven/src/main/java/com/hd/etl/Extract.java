@@ -1,4 +1,4 @@
-package etl;
+package com.hd.etl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class Extract{
     }
 
     public static ArrayList<Document> extractDocuments(String url) throws IOException{
-        ArrayList<Document> docList = new ArrayList<>();
+        ArrayList<Document> docList = new ArrayList<Document>();
         html = new StringBuilder();
 
         //parse html site
@@ -93,14 +93,29 @@ public class Extract{
             event.printStackTrace();
         }
 
+        //TODO TEST
+        try{
+            FileService fileService = new FileService("test.xml");
+
+            for(Document document: docList){
+                String xml = Extract.convertToXHTML(document.html());
+
+                fileService.write(xml);
+            }
+            fileService.close();
+        }
+        catch (IOException event){
+            event.printStackTrace();
+        }
+
         try {
             //connect file channel to enable fast load big files or containing
             //a lot of signs to display it on GUI - without it loading is never ending story
-            Path path = Paths.get("extract.xml");
+            Path path = Paths.get("test.xml");
             FileChannel fileChannel = FileChannel.open(path);
 
             //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(160000);
+            ByteBuffer buffer = ByteBuffer.allocate(120000);
             int bytesRead = fileChannel.read(buffer);
 
             //read file until end - end throw exception (-1)
@@ -148,3 +163,4 @@ public class Extract{
         return doc.html();
     }
 }
+

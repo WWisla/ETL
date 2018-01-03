@@ -1,22 +1,22 @@
-package etl;
-
-import java.util.ArrayList;
+package com.hd.etl;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+
 /**
  * Created by Daniel K on 2017-12-29.
  */
-public class Opinia{
+public class Opinia {
     private String reviewText;
     private float reviewScore;
     private String reviewerName;
     private String reviewDate;
     private String productRecommendation;
     private int votesYes, votesNo;
-    private ArrayList<String> productPros = new ArrayList<>();
-    private ArrayList<String> productCons = new ArrayList<>();
+    private ArrayList<String> productPros = new ArrayList<String>();
+    private ArrayList<String> productCons = new ArrayList<String>();
     //contain full review html code
     private Element review;
     private StringBuilder result = new StringBuilder();
