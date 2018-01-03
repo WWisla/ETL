@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -12,31 +13,68 @@ import java.nio.file.Paths;
  */
 public class FileService {
     private Path path;
-    private FileChannel fileChannel;
-    private FileOutputStream fileOutputStream;
 
     public FileService(String path) throws IOException{
         this.path = Paths.get(path);
-
-        fileOutputStream = new FileOutputStream(this.path.toString());
     }
 
     public void write(String text) throws IOException{
-        fileChannel = fileOutputStream.getChannel();
-
         byte[] bytes = text.getBytes();
+
+        FileChannel fileChannel = new FileOutputStream(path.toString()).getChannel();
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
         fileChannel.write(buffer);
-    }
 
-    public void read(){
-
-    }
-
-    public void close() throws IOException{
         fileChannel.close();
-        fileOutputStream.close();
+    }
+
+    public String encode() throws IOException{
+        FileChannel fileChannel = FileChannel.open(path);
+
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        int bytesRead = fileChannel.read(buffer);
+
+        StringBuilder text = new StringBuilder();
+
+        String encoder = System.getProperty("file.encoding");
+
+        while (bytesRead != -1) {
+            buffer.flip();
+
+            text.append(Charset.forName(encoder).decode(buffer));
+
+            buffer.clear();
+            bytesRead = fileChannel.read(buffer);
+        }
+
+        fileChannel.close();
+
+        return text.toString();
+    }
+
+    public String read() throws IOException{
+        FileChannel fileChannel = FileChannel.open(path);
+
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        int bytesRead = fileChannel.read(buffer);
+
+        StringBuilder text = new StringBuilder();
+
+        while (bytesRead != -1) {
+            buffer.flip();
+
+            while (buffer.hasRemaining()) {
+                text.append((char) buffer.get());
+            }
+
+            buffer.clear();
+            bytesRead = fileChannel.read(buffer);
+        }
+
+        fileChannel.close();
+
+        return text.toString();
     }
 }

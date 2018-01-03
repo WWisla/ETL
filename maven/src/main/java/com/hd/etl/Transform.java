@@ -5,6 +5,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -61,10 +62,39 @@ public class Transform {
         return reviews;
     }
 
-    public static String transformToString() throws UnsupportedEncodingException{
-        //StringBuilder result = new StringBuilder();
-        StringBuilder result2 = new StringBuilder();
+    public static String transformToString(){
+        StringBuilder result = new StringBuilder();
 
+        String fileName = "Transform.xml";
+
+        try{
+            FileService fileService = new FileService(fileName);
+
+            String xml = "";
+
+            for(Opinia review : reviews){
+                xml += review.toString();
+                if(!review.equals(reviews.get(reviews.size()-1))) {
+                    //2 new lines between each html code
+                    xml +=("\r\n\r\n\r\n");
+                }
+            }
+            fileService.write(xml);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
+        try{
+            FileService fileService = new FileService(fileName);
+
+            result.append(fileService.encode());
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
+        /**
         //save result to file
         try {
             String fileName = "transform.xml";
@@ -73,12 +103,8 @@ public class Transform {
 
             for(Opinia review : reviews){
                 printWriter.print(review.toString());
-                //
-                result2.append(review.toString());
                 if(!review.equals(reviews.get(reviews.size()-1))) {
                     //2 new lines between each html code
-                    //
-                    result2.append("\r\n\r\n\r\n");
                     printWriter.print("\r\n\r\n\r\n");
                 }
             }
@@ -88,6 +114,7 @@ public class Transform {
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+         */
         /**
         try {
             //connect file channel to enable fast load big files or containing
@@ -96,7 +123,7 @@ public class Transform {
             FileChannel fileChannel = FileChannel.open(path);
 
             //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(120000);
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
             int bytesRead = fileChannel.read(buffer);
 
             //read file until end - end throw exception (-1)
@@ -126,6 +153,6 @@ public class Transform {
             event.printStackTrace();
         }
         */
-        return result2.toString();
+        return result.toString();
     }
 }

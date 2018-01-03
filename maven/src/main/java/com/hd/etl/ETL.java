@@ -17,7 +17,7 @@ import org.jsoup.nodes.Document;
 public class ETL extends JFrame implements ActionListener{
     private JTextField product;
     private JTextArea result;
-    private JButton extract, transform, load, etl;
+    private JButton extract, transform, load, etl, clearDataBase;
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
 
@@ -34,6 +34,7 @@ public class ETL extends JFrame implements ActionListener{
         transform = new JButton("Transform");
         load = new JButton("Load");
         etl = new JButton("ETL");
+        clearDataBase = new JButton("Clear Data Base");
 
         //GUI panels
         JPanel searchPanel = new JPanel();
@@ -45,6 +46,7 @@ public class ETL extends JFrame implements ActionListener{
         transform.addActionListener(this);
         load.addActionListener(this);
         etl.addActionListener(this);
+        clearDataBase.addActionListener(this);
 
         //button settings
         transform.setEnabled(false);
@@ -67,6 +69,8 @@ public class ETL extends JFrame implements ActionListener{
         operationPanel.add(extract);
         operationPanel.add(transform);
         operationPanel.add(load);
+        operationPanel.add(etl);
+        operationPanel.add(clearDataBase);
 
         //adding GUI panels to window
         add(searchPanel, BorderLayout.NORTH);
@@ -83,7 +87,7 @@ public class ETL extends JFrame implements ActionListener{
 
     public void actionPerformed(ActionEvent e) {
         //Extract button action
-        if(e.getActionCommand().equals("Extract")){
+        if(e.getActionCommand().equals(extract.getActionCommand())){
             //create ceneo.pl url with product number to extract reviews
             //"https://www.ceneo.pl/47629930#tab=reviews"
             String url = "https://www.ceneo.pl/" + product.getText() + "#tab=reviews";
@@ -103,26 +107,30 @@ public class ETL extends JFrame implements ActionListener{
             transform.setEnabled(true);
         }
         //Transform button action
-        if(e.getActionCommand().equals("Transform")){
+        if(e.getActionCommand().equals(transform.getActionCommand())){
             reviews = Transform.transform(docList);
 
             //display result of transform in GUI
-            try {
-                result.setText(Transform.transformToString());
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace();
-            }
+            result.setText(Transform.transformToString());
 
             //enable load
             load.setEnabled(true);
         }
         //Load button action
-        if(e.getActionCommand().equals("Load")){
+        if(e.getActionCommand().equals(load.getActionCommand())){
             //TODO
+            Load.load();
         }
         //ETL button action
-        if(e.getActionCommand().equals("ETL")){
+        if(e.getActionCommand().equals(etl.getActionCommand())){
             //TODO
+            System.out.println("ETL");
+        }
+        //Clear Data Base action
+        if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
+            //TODO
+            System.out.println("DROP");
+            Load.dropDataBase();
         }
     }
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public class Extract{
         //add to list of documents from this extract
         docList.add(doc);
 
+        String fileName = "extract.xml";
+
         while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
             for (Element element : tempDoc.select("li")) {
                 //if next site link exist catch it to temporary element
@@ -66,80 +69,24 @@ public class Extract{
             }
         }
 
-        try {
-            //create new file named below
-            String fileName = "extract.xml";
-
-            PrintWriter printWriter = new PrintWriter(fileName);
-
-            for(Document document : docList){
-                //convert html of each doc to xhtml and save to file
-                String xml = Extract.convertToXHTML(document.html());
-
-                printWriter.print(xml);
-                //if its last parsed document not needed to add 2 new lines
-                if(!document.equals(docList.get(docList.size()-1))) {
-                    //2 new lines between each html code
-                    printWriter.print("\r\n\r\n");
-                }
-            }
-
-            //close file
-            printWriter.close();
-
-            System.out.println("Zapisano do pliku " + fileName);
-        }
-        catch (FileNotFoundException event){
-            event.printStackTrace();
-        }
-
-        //TODO TEST
         try{
-            FileService fileService = new FileService("test.xml");
+            FileService fileService = new FileService(fileName);
+
+            String xml = "";
 
             for(Document document: docList){
-                String xml = Extract.convertToXHTML(document.html());
-
-                fileService.write(xml);
+                xml += Extract.convertToXHTML(document.html());
             }
-            fileService.close();
+            fileService.write(xml);
         }
         catch (IOException event){
             event.printStackTrace();
         }
 
         try {
-            //connect file channel to enable fast load big files or containing
-            //a lot of signs to display it on GUI - without it loading is never ending story
-            Path path = Paths.get("test.xml");
-            FileChannel fileChannel = FileChannel.open(path);
+            FileService fileService = new FileService(fileName);
 
-            //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(120000);
-            int bytesRead = fileChannel.read(buffer);
-
-            //read file until end - end throw exception (-1)
-            while (bytesRead != -1) {
-                buffer.flip();
-
-                //load signs one by one
-                while (buffer.hasRemaining()) {
-                    synchronized (buffer) {
-                        //load sign to string builder
-                        html.append((char) buffer.get());
-                        //CharBuffer cb = Charset.defaultCharset().decode(buffer);
-                        //html.append(cb.toString());
-                    }
-                }
-                //System.out.println(fileChannel.position());
-                //clear buffer - again allocated number and load again
-                buffer.clear();
-                bytesRead = fileChannel.read(buffer);
-            }
-            System.out.println("Extract:DONE");
-
-            //close file channel
-            fileChannel.close();
+            html.append(fileService.read());
         }
         catch (IOException event){
             event.printStackTrace();
@@ -151,8 +98,6 @@ public class Extract{
     public static String extractToString(){
         return html.toString();
     }
-
-    public static StringBuilder extractStringBuilder(){return html;}
 
     public static String convertToXHTML(String html){
         //convert html to xhtml - no more errors in syntax
