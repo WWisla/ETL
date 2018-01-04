@@ -33,21 +33,6 @@ public class Load {
         }
     }
 
-    public static void test() throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
-
-        try {
-            CloseableHttpResponse response = httpClient.execute(httpPost);
-            String str = EntityUtils.toString(response.getEntity());
-            System.out.println(str);
-            httpClient.close();
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     public static void loadProdukty(){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");

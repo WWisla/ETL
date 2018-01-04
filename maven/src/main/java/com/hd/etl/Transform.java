@@ -15,6 +15,13 @@ import java.util.ArrayList;
  */
 public class Transform {
     private static ArrayList<Opinia> reviews = new ArrayList<Opinia>();
+    private static Produkt product;
+
+    public static Produkt transform(Document document){
+        product = new Produkt(document);
+
+        return product;
+    }
 
     public static ArrayList<Opinia> transform(ArrayList<Document> docList){
         //clear list before transform

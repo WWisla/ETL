@@ -16,11 +16,12 @@ import org.jsoup.nodes.Document;
  * Created by Daniel K on 2017-10-28.
  */
 public class ETL extends JFrame implements ActionListener{
-    private JTextField product;
+    private JTextField productID;
     private JTextArea result;
     private JButton extract, transform, load, etl, clearDataBase;
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
+    private Produkt product;
 
     public ETL(){
         //window GUI settings
@@ -29,7 +30,7 @@ public class ETL extends JFrame implements ActionListener{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         //GUI components
-        product = new JTextField(10);
+        productID = new JTextField(10);
         result = new JTextArea(15,100);
         extract = new JButton("Extract");
         transform = new JButton("Transform");
@@ -66,7 +67,7 @@ public class ETL extends JFrame implements ActionListener{
 
         //adding GUI components to panels
         searchPanel.add(new JLabel("Product ID:"));
-        searchPanel.add(product);
+        searchPanel.add(productID);
         operationPanel.add(extract);
         operationPanel.add(transform);
         operationPanel.add(load);
@@ -79,7 +80,7 @@ public class ETL extends JFrame implements ActionListener{
         add(operationPanel, BorderLayout.SOUTH);
 
         //default product number - for test purpose only
-        product.setText("47629930");//56435526
+        productID.setText("47629930");//56435526
 
         //resize window to used by components size and enable visibility
         pack();
@@ -89,7 +90,7 @@ public class ETL extends JFrame implements ActionListener{
     public String extract(){
         //create ceneo.pl url with product number to extract reviews
         //"https://www.ceneo.pl/47629930#tab=reviews"
-        String url = "https://www.ceneo.pl/" + product.getText() + "#tab=reviews";
+        String url = "https://www.ceneo.pl/" + productID.getText() + "#tab=reviews";
 
         //extract all review sites for this product number
         try {
@@ -102,17 +103,16 @@ public class ETL extends JFrame implements ActionListener{
         //enable transform
         transform.setEnabled(true);
         load.setEnabled(false);
-        repaint();
 
         return Extract.extractToString();
     }
 
     public String transform(){
         reviews = Transform.transform(docList);
+        product = Transform.transform(docList.get(0));
 
         //enable load
         load.setEnabled(true);
-        repaint();
 
         return Transform.transformToString();
     }
@@ -121,7 +121,6 @@ public class ETL extends JFrame implements ActionListener{
         //TODO full load code
 
         //deleting files after load
-        /**
         File reviewsXML = new File("reviews.xml");
         File extractXML = new File("extract.xml");
         File transformXML = new File("transform.xml");
@@ -132,10 +131,8 @@ public class ETL extends JFrame implements ActionListener{
         else {
             System.out.println("ERROR");
         }
-         */
 
         transform.setEnabled(false);
-        repaint();
 
         reviews.clear();
         docList.clear();
@@ -147,6 +144,7 @@ public class ETL extends JFrame implements ActionListener{
         //Extract button action
         if(e.getActionCommand().equals(extract.getActionCommand())){
             //display result of extract in GUI
+            //TODO find error in setText -> blocking gui after second use
             result.setText(extract());
             repaint();
         }

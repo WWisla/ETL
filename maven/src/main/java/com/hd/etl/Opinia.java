@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Created by Daniel K on 2017-12-29.
  */
 public class Opinia {
+    private long reviewID;
     private String reviewText;
     private float reviewScore;
     private String reviewerName;
@@ -23,6 +24,9 @@ public class Opinia {
 
     public Opinia(Element review){
         this.review = review;
+
+        //get review id
+        reviewID = Long.parseLong(review.select("button[data-review-id]").attr("data-review-id"));
 
         //get product pros from review
         Elements pros = review.select("div[class=pros-cell]").select("li");
@@ -112,5 +116,53 @@ public class Opinia {
 
     public String toString(){
         return result.toString();
+    }
+
+    public long getReviewID() {
+        return reviewID;
+    }
+
+    public String getReviewText() {
+        return reviewText;
+    }
+
+    public float getReviewScore() {
+        return reviewScore;
+    }
+
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public String getReviewDate() {
+        return reviewDate;
+    }
+
+    public String getProductRecommendation() {
+        return productRecommendation;
+    }
+
+    public int getVotesYes() {
+        return votesYes;
+    }
+
+    public int getVotesNo() {
+        return votesNo;
+    }
+
+    public String getProductPros() {
+        String plus = "";
+        for (String pros: productPros) {
+            plus += pros+",";
+        }
+        return plus;
+    }
+
+    public String getProductCons() {
+        String minus = "";
+        for (String cons: productCons) {
+            minus += cons+",";
+        }
+        return minus;
     }
 }
