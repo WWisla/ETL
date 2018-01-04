@@ -2,6 +2,7 @@ package com.hd.etl;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -16,6 +17,14 @@ public class FileService {
 
     public FileService(String path) throws IOException{
         this.path = Paths.get(path);
+    }
+
+    public void print(String text) throws IOException{
+        PrintWriter printWriter = new PrintWriter(this.path.toString());
+
+        printWriter.print(text);
+
+        printWriter.close();
     }
 
     public void write(String text) throws IOException{

@@ -72,12 +72,12 @@ public class Extract{
         try{
             FileService fileService = new FileService(fileName);
 
-            String xml = "";
+            StringBuilder xml = new StringBuilder();
 
             for(Document document: docList){
-                xml += Extract.convertToXHTML(document.html());
+                xml.append(convertToXHTML(document.html()));
             }
-            fileService.write(xml);
+            fileService.print(xml.toString());
         }
         catch (IOException event){
             event.printStackTrace();

@@ -1,5 +1,6 @@
 package com.hd.etl;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -7,6 +8,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,8 +24,23 @@ public class Load {
 
         try {
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            //assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
-            System.out.println("DROPED TABLES");
+            String str = EntityUtils.toString(response.getEntity());
+            System.out.println(str);
+            httpClient.close();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void test() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
+
+        try {
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            String str = EntityUtils.toString(response.getEntity());
+            System.out.println(str);
             httpClient.close();
         }
         catch (IOException e){
@@ -44,13 +61,15 @@ public class Load {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            //assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
+            String str = EntityUtils.toString(response.getEntity());
+            System.out.println(str);
             httpClient.close();
         }
         catch (IOException e){
             e.printStackTrace();
         }
     }
+
     public static void loadOpinie(){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
@@ -69,13 +88,15 @@ public class Load {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            //assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
+            String str = EntityUtils.toString(response.getEntity());
+            System.out.println(str);
             httpClient.close();
         }
         catch (IOException e){
             e.printStackTrace();
         }
     }
+
     public static void loadProduktyOpinie(){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
@@ -86,7 +107,8 @@ public class Load {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            //assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
+            String str = EntityUtils.toString(response.getEntity());
+            System.out.println(str);
             httpClient.close();
         }
         catch (IOException e){

@@ -40,23 +40,23 @@ public class Transform {
             //create new file for opinions
             String fileName = "reviews.xml";
 
-            PrintWriter printWriter = new PrintWriter(fileName);
+            FileService fileService = new FileService(fileName);
+
+            StringBuilder xml = new StringBuilder();
 
             for(Opinia review : reviews){
                 //save reviews to file
-                printWriter.print(review.outerHtml());
+                xml.append(review.outerHtml());
                 if(!review.equals(reviews.get(reviews.size()-1))) {
                     //if its last review not needed to add 2 new lines
-                    printWriter.print("\r\n\r\n");
+                    xml.append("\r\n\r\n");
                 }
             }
-
-            //close file
-            printWriter.close();
+            fileService.print(xml.toString());
 
             System.out.println("Zapisano do pliku " + fileName);
         }
-        catch (FileNotFoundException event){
+        catch (IOException event){
             event.printStackTrace();
         }
         return reviews;
@@ -70,16 +70,17 @@ public class Transform {
         try{
             FileService fileService = new FileService(fileName);
 
-            String xml = "";
+            StringBuilder xml = new StringBuilder();
 
             for(Opinia review : reviews){
-                xml += review.toString();
+                xml.append(review.toString());
                 if(!review.equals(reviews.get(reviews.size()-1))) {
                     //2 new lines between each html code
-                    xml +=("\r\n\r\n\r\n");
+                    xml.append("\r\n\r\n\r\n");
                 }
             }
-            fileService.write(xml);
+
+            fileService.print(xml.toString());
         }
         catch (IOException e){
             e.printStackTrace();
