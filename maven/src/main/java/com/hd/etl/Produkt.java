@@ -26,10 +26,5 @@ public class Produkt {
         model = product.select("strong[class=js_searchInGoogleTooltip]").first().text();
 
         notes = product.select("div[class=ProductSublineTags]").text();
-
-        System.out.println(productType);
-        System.out.println(brand);
-        System.out.println(model);
-        System.out.println(notes);
     }
 }
