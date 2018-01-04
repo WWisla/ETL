@@ -14,8 +14,10 @@ public class Produkt {
     //contain full element
     private Document product;
 
-    public Produkt(Document product){
+    public Produkt(Document product, long id){
         this.product = product;
+
+        productID = id;
 
         productType = product.select("dl[data-gacategoryname]").attr("data-gacategoryname");
         productType = productType.substring(1);
@@ -26,5 +28,31 @@ public class Produkt {
         model = product.select("strong[class=js_searchInGoogleTooltip]").first().text();
 
         notes = product.select("div[class=ProductSublineTags]").text();
+
+        System.out.println(productID);
+        System.out.println(productType);
+        System.out.println(brand);
+        System.out.println(model);
+        System.out.println(notes);
+    }
+
+    public long getProductID() {
+        return productID;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getNotes() {
+        return notes;
     }
 }

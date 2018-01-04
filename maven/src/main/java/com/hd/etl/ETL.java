@@ -22,6 +22,7 @@ public class ETL extends JFrame implements ActionListener{
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
     private Produkt product;
+    private long id;
 
     public ETL(){
         //window GUI settings
@@ -90,6 +91,7 @@ public class ETL extends JFrame implements ActionListener{
     public String extract(){
         //create ceneo.pl url with product number to extract reviews
         //"https://www.ceneo.pl/47629930#tab=reviews"
+        id = Long.parseLong(productID.getText());
         String url = "https://www.ceneo.pl/" + productID.getText() + "#tab=reviews";
 
         //extract all review sites for this product number
@@ -109,7 +111,7 @@ public class ETL extends JFrame implements ActionListener{
 
     public String transform(){
         reviews = Transform.transform(docList);
-        product = Transform.transform(docList.get(0));
+        product = Transform.transform(docList.get(0), id);
 
         //enable load
         load.setEnabled(true);
@@ -118,7 +120,14 @@ public class ETL extends JFrame implements ActionListener{
     }
 
     public String load(){
-        //TODO full load code
+        System.out.println(Load.loadProdukty(product));
+
+        int i = 1;
+        for(Opinia review : reviews){
+            Load.loadOpinie(review);
+            System.out.println(i);
+            i++;
+        }
 
         //deleting files after load
         File reviewsXML = new File("reviews.xml");

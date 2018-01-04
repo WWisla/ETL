@@ -17,8 +17,8 @@ public class Transform {
     private static ArrayList<Opinia> reviews = new ArrayList<Opinia>();
     private static Produkt product;
 
-    public static Produkt transform(Document document){
-        product = new Produkt(document);
+    public static Produkt transform(Document document, long id){
+        product = new Produkt(document, id);
 
         return product;
     }
