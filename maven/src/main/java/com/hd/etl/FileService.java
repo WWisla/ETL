@@ -20,14 +20,16 @@ public class FileService {
 
     public void write(String text) throws IOException{
         byte[] bytes = text.getBytes();
+        FileOutputStream fileOutputStream = new FileOutputStream(path.toString());
 
-        FileChannel fileChannel = new FileOutputStream(path.toString()).getChannel();
+        FileChannel fileChannel = fileOutputStream.getChannel();
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
         fileChannel.write(buffer);
 
         fileChannel.close();
+        fileOutputStream.close();
     }
 
     public String encode() throws IOException{

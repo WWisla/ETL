@@ -65,7 +65,7 @@ public class Transform {
     public static String transformToString(){
         StringBuilder result = new StringBuilder();
 
-        String fileName = "Transform.xml";
+        String fileName = "transform.xml";
 
         try{
             FileService fileService = new FileService(fileName);

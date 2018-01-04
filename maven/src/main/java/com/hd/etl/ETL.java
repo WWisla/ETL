@@ -101,6 +101,8 @@ public class ETL extends JFrame implements ActionListener{
 
         //enable transform
         transform.setEnabled(true);
+        load.setEnabled(false);
+        repaint();
 
         return Extract.extractToString();
     }
@@ -110,6 +112,7 @@ public class ETL extends JFrame implements ActionListener{
 
         //enable load
         load.setEnabled(true);
+        repaint();
 
         return Transform.transformToString();
     }
@@ -118,6 +121,7 @@ public class ETL extends JFrame implements ActionListener{
         //TODO full load code
 
         //deleting files after load
+        /**
         File reviewsXML = new File("reviews.xml");
         File extractXML = new File("extract.xml");
         File transformXML = new File("transform.xml");
@@ -128,8 +132,13 @@ public class ETL extends JFrame implements ActionListener{
         else {
             System.out.println("ERROR");
         }
+         */
 
         transform.setEnabled(false);
+        repaint();
+
+        reviews.clear();
+        docList.clear();
 
         return "XD";
     }
@@ -139,16 +148,19 @@ public class ETL extends JFrame implements ActionListener{
         if(e.getActionCommand().equals(extract.getActionCommand())){
             //display result of extract in GUI
             result.setText(extract());
+            repaint();
         }
         //Transform button action
         if(e.getActionCommand().equals(transform.getActionCommand())){
             //display result of transform in GUI
             result.setText(transform());
+            repaint();
         }
         //Load button action
         if(e.getActionCommand().equals(load.getActionCommand())){
             //display result of load in GUI
             result.setText(load());
+            repaint();
         }
         //ETL button action
         if(e.getActionCommand().equals(etl.getActionCommand())){
