@@ -143,7 +143,7 @@ public class ETL extends JFrame implements ActionListener{
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    result.append(etlMethods.dropDataBase());
+                    result.append(etlMethods.dropDataBase() + "\n");
                 }
             }).run();
         }
@@ -189,13 +189,15 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String load(){
-            System.out.println(Load.loadProdukty(product));
+            System.out.println();
+            System.out.println("Produkt: " + Load.loadProdukty(product));
+            System.out.println();
 
             int i = 1;
             for(Opinia review : reviews){
+                System.out.println(i);
                 System.out.println("Opinia: " + Load.loadOpinie(review));
                 System.out.println("Produkt-Opinia: " + Load.loadProduktyOpinie(product, review));
-                System.out.println(i);
                 i++;
             }
 

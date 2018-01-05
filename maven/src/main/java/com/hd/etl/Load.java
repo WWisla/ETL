@@ -76,6 +76,10 @@ public class Load {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
             str = EntityUtils.toString(response.getEntity());
+
+            if(str.equals("Eh znowu :(")){
+                str = " TEN SIĘ ZEPSUŁ (UŻYŁBYM INNEGO SŁOWA)\r\n" + review.toString();
+            }
             httpClient.close();
         }
         catch (IOException e){
