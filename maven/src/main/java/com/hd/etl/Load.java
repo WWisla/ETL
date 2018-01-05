@@ -17,25 +17,26 @@ import java.util.List;
  * Created by Daniel K on 2017-10-28.
  */
 public class Load {
-    public static void dropDataBase(){
+    public static String dropDataBase(){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_drop.php");
+        String str = "";
 
         try {
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            String str = EntityUtils.toString(response.getEntity());
-            System.out.println(str);
+            str = EntityUtils.toString(response.getEntity());
             httpClient.close();
         }
         catch (IOException e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
+        return str;
     }
 
     public static String loadProdukty(Produkt product){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
-        String str = "Eh znowu :(";
+        String str = "";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("id_produktu", String.valueOf(product.getProductID())));
@@ -50,19 +51,20 @@ public class Load {
             httpClient.close();
         }
         catch (IOException e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return str;
     }
 
-    public static void loadOpinie(Opinia review){
+    public static String loadOpinie(Opinia review){
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
+        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_opinie.php");
+        String str = "";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("id_opinii", String.valueOf(review.getReviewID())));
         params.add(new BasicNameValuePair("autor", review.getReviewerName()));
-        params.add(new BasicNameValuePair("data", ""));
+        params.add(new BasicNameValuePair("data", "01.01.2000"));
         params.add(new BasicNameValuePair("ocena", String.valueOf(review.getReviewScore())));
         params.add(new BasicNameValuePair("rekomendacja", review.getProductRecommendation()));
         params.add(new BasicNameValuePair("tresc", review.getReviewText()));
@@ -73,31 +75,32 @@ public class Load {
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            String str = EntityUtils.toString(response.getEntity());
-            System.out.println(str);
+            str = EntityUtils.toString(response.getEntity());
             httpClient.close();
         }
         catch (IOException e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
+        return str;
     }
 
-    public static void loadProduktyOpinie(){
+    public static String loadProduktyOpinie(Produkt product, Opinia review){
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
+        HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty_opinie.php");
+        String str = "";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("id_produktu", "101"));
-        params.add(new BasicNameValuePair("id_opinii", "101"));
+        params.add(new BasicNameValuePair("id_produktu", String.valueOf(product.getProductID())));
+        params.add(new BasicNameValuePair("id_opinii", String.valueOf(review.getReviewID())));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params));
             CloseableHttpResponse response = httpClient.execute(httpPost);
-            String str = EntityUtils.toString(response.getEntity());
-            System.out.println(str);
+            str = EntityUtils.toString(response.getEntity());
             httpClient.close();
         }
         catch (IOException e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
+        return str;
     }
 }

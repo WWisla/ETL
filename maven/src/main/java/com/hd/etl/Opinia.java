@@ -152,16 +152,26 @@ public class Opinia {
 
     public String getProductPros() {
         String plus = "";
-        for (String pros: productPros) {
-            plus += pros+",";
+        if(!productPros.isEmpty()) {
+            for (String pros : productPros) {
+                plus += pros + ", ";
+            }
+        }
+        else {
+            plus = "-";
         }
         return plus;
     }
 
     public String getProductCons() {
         String minus = "";
-        for (String cons: productCons) {
-            minus += cons+",";
+        if (!productCons.isEmpty()) {
+            for (String cons : productCons) {
+                minus += cons + ", ";
+            }
+        }
+        else {
+            minus = "-";
         }
         return minus;
     }

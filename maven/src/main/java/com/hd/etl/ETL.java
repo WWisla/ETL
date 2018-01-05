@@ -1,7 +1,9 @@
 package com.hd.etl;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +25,7 @@ public class ETL extends JFrame implements ActionListener{
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
     private Produkt product;
     private long id;
+    private ETLMethods etlMethods = new ETLMethods();
 
     public ETL(){
         //window GUI settings
@@ -88,97 +91,61 @@ public class ETL extends JFrame implements ActionListener{
         setVisible(true);
     }
 
-    public String extract(){
-        //create ceneo.pl url with product number to extract reviews
-        //"https://www.ceneo.pl/47629930#tab=reviews"
-        id = Long.parseLong(productID.getText());
-        String url = "https://www.ceneo.pl/" + productID.getText() + "#tab=reviews";
-
-        //extract all review sites for this product number
-        try {
-            docList = Extract.extractDocuments(url);
-        }
-        catch (IOException event){
-            event.printStackTrace();
-        }
-
-        //enable transform
-        transform.setEnabled(true);
-        load.setEnabled(false);
-
-        return Extract.extractToString();
-    }
-
-    public String transform(){
-        reviews = Transform.transform(docList);
-        product = Transform.transform(docList.get(0), id);
-
-        //enable load
-        load.setEnabled(true);
-
-        return Transform.transformToString();
-    }
-
-    public String load(){
-        System.out.println(Load.loadProdukty(product));
-
-        int i = 1;
-        for(Opinia review : reviews){
-            Load.loadOpinie(review);
-            System.out.println(i);
-            i++;
-        }
-
-        //deleting files after load
-        File reviewsXML = new File("reviews.xml");
-        File extractXML = new File("extract.xml");
-        File transformXML = new File("transform.xml");
-
-        if(reviewsXML.delete() && extractXML.delete() && transformXML.delete()){
-            System.out.println("TEMPORARY FILES HAS BEEN DELETED");
-        }
-        else {
-            System.out.println("ERROR");
-        }
-
-        transform.setEnabled(false);
-
-        reviews.clear();
-        docList.clear();
-
-        return "XD";
-    }
-
     public void actionPerformed(ActionEvent e) {
         //Extract button action
         if(e.getActionCommand().equals(extract.getActionCommand())){
             //display result of extract in GUI
             //TODO find error in setText -> blocking gui after second use
-            result.setText(extract());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    result.setText(etlMethods.extract());
+                }
+            }).run();
             repaint();
         }
         //Transform button action
         if(e.getActionCommand().equals(transform.getActionCommand())){
             //display result of transform in GUI
-            result.setText(transform());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    result.setText(etlMethods.transform());
+                }
+            }).run();
             repaint();
         }
         //Load button action
         if(e.getActionCommand().equals(load.getActionCommand())){
             //display result of load in GUI
-            result.setText(load());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    result.setText(etlMethods.load());
+                }
+            }).run();
             repaint();
         }
         //ETL button action
         if(e.getActionCommand().equals(etl.getActionCommand())){
-            extract();
-            transform();
-            load();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etlMethods.extract();
+                    etlMethods.transform();
+                    etlMethods.load();
+                }
+            }).run();
         }
         //Clear Data Base action
         if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
             //TODO finish this method
-            Load.dropDataBase();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    result.append(etlMethods.dropDataBase());
+                }
+            }).run();
         }
     }
 
@@ -189,6 +156,72 @@ public class ETL extends JFrame implements ActionListener{
                 new ETL();
             }
         }).run();
+    }
+
+    private class ETLMethods{
+        public String extract(){
+            //create ceneo.pl url with product number to extract reviews
+            //"https://www.ceneo.pl/47629930#tab=reviews"
+            id = Long.parseLong(productID.getText());
+            String url = "https://www.ceneo.pl/" + productID.getText() + "#tab=reviews";
+
+            //extract all review sites for this product number
+            try {
+                docList = Extract.extractDocuments(url);
+            }
+            catch (IOException event){
+                event.printStackTrace();
+            }
+
+            //enable transform
+            transform.setEnabled(true);
+            load.setEnabled(false);
+            return Extract.extractToString();
+        }
+
+        public String transform(){
+            reviews = Transform.transform(docList);
+            product = Transform.transform(docList.get(0), id);
+
+            //enable load
+            load.setEnabled(true);
+            return Transform.transformToString();
+        }
+
+        public String load(){
+            System.out.println(Load.loadProdukty(product));
+
+            int i = 1;
+            for(Opinia review : reviews){
+                System.out.println("Opinia: " + Load.loadOpinie(review));
+                System.out.println("Produkt-Opinia: " + Load.loadProduktyOpinie(product, review));
+                System.out.println(i);
+                i++;
+            }
+
+            //deleting files after load
+            File reviewsXML = new File("reviews.xml");
+            File extractXML = new File("extract.xml");
+            File transformXML = new File("transform.xml");
+
+            if(reviewsXML.delete() && extractXML.delete() && transformXML.delete()){
+                System.out.println("TEMPORARY FILES HAS BEEN DELETED");
+            }
+            else {
+                System.out.println("ERROR");
+            }
+
+            transform.setEnabled(false);
+            load.setEnabled(false);
+
+            reviews.clear();
+            docList.clear();
+
+            return "Zrobione";
+        }
+        public String dropDataBase(){
+            return Load.dropDataBase();
+        }
     }
 }
 

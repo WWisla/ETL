@@ -1,13 +1,15 @@
 package com.hd.etl;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * Created by Daniel K on 2018-01-04.
  */
 public class Produkt {
     private long productID;
-    private String productType;
+    private String productType = "";
     private String brand;
     private String model;
     private String notes;
@@ -19,9 +21,7 @@ public class Produkt {
 
         productID = id;
 
-        productType = product.select("dl[data-gacategoryname]").attr("data-gacategoryname");
-        productType = productType.substring(1);
-        productType = productType.replace("/",", ");
+        productType = product.select("span[data-category-id]").select("span[itemprop=title]").last().text();
 
         brand = product.select("meta[property=og:brand]").attr("content");
 
