@@ -95,7 +95,6 @@ public class ETL extends JFrame implements ActionListener{
         //Extract button action
         if(e.getActionCommand().equals(extract.getActionCommand())){
             //display result of extract in GUI
-            //TODO find error in setText -> blocking gui after second use
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -139,7 +138,6 @@ public class ETL extends JFrame implements ActionListener{
         }
         //Clear Data Base action
         if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
-            //TODO finish this method
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -221,6 +219,7 @@ public class ETL extends JFrame implements ActionListener{
 
             return "Zrobione";
         }
+
         public String dropDataBase(){
             return Load.dropDataBase();
         }

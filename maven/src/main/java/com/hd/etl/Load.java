@@ -64,7 +64,8 @@ public class Load {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("id_opinii", String.valueOf(review.getReviewID())));
         params.add(new BasicNameValuePair("autor", review.getReviewerName()));
-        params.add(new BasicNameValuePair("data", "01.01.2000"));
+        params.add(new BasicNameValuePair("data", review.getReviewDate().substring(0,10)));
+        params.add(new BasicNameValuePair("godzina", review.getReviewDate().substring(11,19)));
         params.add(new BasicNameValuePair("ocena", String.valueOf(review.getReviewScore())));
         params.add(new BasicNameValuePair("rekomendacja", review.getProductRecommendation()));
         params.add(new BasicNameValuePair("tresc", review.getReviewText()));

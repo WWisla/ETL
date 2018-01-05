@@ -42,7 +42,6 @@ public class Opinia {
 
         //get review body
         reviewText = review.select("p[class=product-review-body]").text();
-
         //get review score
         String score = review.select("span[class=review-score-count]").text();
         if(score.length()<=3){
@@ -123,7 +122,7 @@ public class Opinia {
     }
 
     public String getReviewText() {
-        return reviewText;
+        return Encoder.replaceAllSymbols(reviewText);
     }
 
     public float getReviewScore() {
@@ -131,7 +130,7 @@ public class Opinia {
     }
 
     public String getReviewerName() {
-        return reviewerName;
+        return Encoder.replaceAllSymbols(reviewerName);
     }
 
     public String getReviewDate() {
@@ -160,6 +159,7 @@ public class Opinia {
         else {
             plus = "-";
         }
+        plus = Encoder.replaceAllSymbols(plus);
         return plus;
     }
 
@@ -173,6 +173,7 @@ public class Opinia {
         else {
             minus = "-";
         }
+        minus = Encoder.replaceAllSymbols(minus);
         return minus;
     }
 }
