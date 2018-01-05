@@ -1,18 +1,11 @@
 package com.hd.etl;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -70,6 +63,7 @@ public class Extract{
         }
 
         try{
+            //save extract to file using file service
             FileService fileService = new FileService(fileName);
 
             StringBuilder xml = new StringBuilder();
@@ -84,6 +78,7 @@ public class Extract{
         }
 
         try {
+            //read from file - faster operating on big strings
             FileService fileService = new FileService(fileName);
 
             html.append(fileService.read());

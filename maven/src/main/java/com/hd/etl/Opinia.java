@@ -53,7 +53,7 @@ public class Opinia {
             score = score.replace(',','.');
             score = score.substring(0,3);
         }
-        //
+        //get score
         reviewScore = Float.valueOf(score);
 
         //get reviewer nickname
@@ -77,6 +77,14 @@ public class Opinia {
         result.append(reviewScore + "/5.0 " + productRecommendation + "\r\n");
         result.append("✔ - " + votesYes + "\t X - " + votesNo + "\r\n");
         result.append(reviewText + "\r\n");
+    }
+
+    public String outerHtml(){
+        //return full review html code
+        return review.outerHtml();
+    }
+
+    public String toString(){
 
         if(!productPros.isEmpty()) {
             result.append("Zalety:\r\n");
@@ -106,14 +114,7 @@ public class Opinia {
 
         //String delimiter = "********************************************";
         //result.append("\r\n"+ delimiter + delimiter + delimiter + delimiter + delimiter +"\r\n");
-    }
 
-    public String outerHtml(){
-        //return full review html code
-        return review.outerHtml();
-    }
-
-    public String toString(){
         return result.toString();
     }
 
@@ -150,6 +151,7 @@ public class Opinia {
     }
 
     public String getProductPros() {
+        //get pros as string
         String plus = "";
         if(!productPros.isEmpty()) {
             for (String pros : productPros) {
@@ -164,6 +166,7 @@ public class Opinia {
     }
 
     public String getProductCons() {
+        //get cons as string
         String minus = "";
         if (!productCons.isEmpty()) {
             for (String cons : productCons) {

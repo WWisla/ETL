@@ -1,30 +1,30 @@
 package com.hd.etl;
 
+import org.jsoup.nodes.Document;
+
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-
-import org.jsoup.nodes.Document;
 
 /**
  * Created by Daniel K on 2017-10-28.
  */
 public class ETL extends JFrame implements ActionListener{
+    //GUI
     private JTextField productID;
     private JTextArea result;
     private JButton extract, transform, load, etl, clearDataBase;
+    //etl variables
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
     private Produkt product;
     private long id;
+    //methods pointer
     private ETLMethods etlMethods = new ETLMethods();
 
     public ETL(){
@@ -62,6 +62,7 @@ public class ETL extends JFrame implements ActionListener{
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         resultPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+        //text display settings in result panel
         result.setLineWrap(true);
         result.setWrapStyleWord(true);
         result.setEditable(false);
@@ -127,6 +128,7 @@ public class ETL extends JFrame implements ActionListener{
         }
         //ETL button action
         if(e.getActionCommand().equals(etl.getActionCommand())){
+            //TODO FINISH THIS METHOD
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -138,6 +140,7 @@ public class ETL extends JFrame implements ActionListener{
         }
         //Clear Data Base action
         if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
+            //TODO FINISH THIS METHOD
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -178,6 +181,7 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String transform(){
+            //get all reviews and product infor
             reviews = Transform.transform(docList);
             product = Transform.transform(docList.get(0), id);
 
@@ -187,15 +191,19 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String load(){
+            //TODO FINISH THIS METHOD
+            //Try load product to database
             System.out.println();
-            System.out.println("Produkt: " + Load.loadProdukty(product));
+            System.out.println("Produkt: " + Load.loadProdukt(product));
             System.out.println();
 
             int i = 1;
             for(Opinia review : reviews){
                 System.out.println(i);
-                System.out.println("Opinia: " + Load.loadOpinie(review));
-                System.out.println("Produkt-Opinia: " + Load.loadProduktyOpinie(product, review));
+                //try load review to database
+                System.out.println("Opinia: " + Load.loadOpinia(review));
+                //try load relation between product-review to database
+                System.out.println("Produkt-Opinia: " + Load.loadProduktOpinia(product, review));
                 i++;
             }
 
@@ -211,9 +219,11 @@ public class ETL extends JFrame implements ActionListener{
                 System.out.println("ERROR");
             }
 
+            //disable buttons
             transform.setEnabled(false);
             load.setEnabled(false);
 
+            //clear etl variables
             reviews.clear();
             docList.clear();
 
@@ -221,6 +231,7 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String dropDataBase(){
+            //clear all database - recreate empty database
             return Load.dropDataBase();
         }
     }

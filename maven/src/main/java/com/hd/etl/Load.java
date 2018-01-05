@@ -18,50 +18,77 @@ import java.util.List;
  */
 public class Load {
     public static String dropDataBase(){
+        //clear database
         CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        //connection url
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_drop.php");
+
         String str = "";
 
         try {
+            //connect to url
             CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            //get response from url
             str = EntityUtils.toString(response.getEntity());
+
             httpClient.close();
         }
         catch (IOException e){
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return str;
     }
 
-    public static String loadProdukty(Produkt product){
+    public static String loadProdukt(Produkt product){
+        //load product
         CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        //connection url
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty.php");
+
         String str = "";
 
+        //create POST parameters list
         List<NameValuePair> params = new ArrayList<NameValuePair>();
+
         params.add(new BasicNameValuePair("id_produktu", String.valueOf(product.getProductID())));
         params.add(new BasicNameValuePair("rodzaj", product.getProductType()));
         params.add(new BasicNameValuePair("marka", product.getBrand()));
         params.add(new BasicNameValuePair("model", product.getModel()));
         params.add(new BasicNameValuePair("uwagi", product.getNotes()));
+
         try {
+            //set params
             httpPost.setEntity(new UrlEncodedFormEntity(params));
+
+            //connect to url with post method and params
             CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            //get response from url
             str = EntityUtils.toString(response.getEntity());
+
             httpClient.close();
         }
         catch (IOException e){
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return str;
     }
 
-    public static String loadOpinie(Opinia review){
+    public static String loadOpinia(Opinia review){
+        //load single review
         CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        //connection url
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_opinie.php");
+
         String str = "";
 
+        //create list of params
         List<NameValuePair> params = new ArrayList<NameValuePair>();
+
         params.add(new BasicNameValuePair("id_opinii", String.valueOf(review.getReviewID())));
         params.add(new BasicNameValuePair("autor", review.getReviewerName()));
         params.add(new BasicNameValuePair("data", review.getReviewDate().substring(0,10)));
@@ -73,38 +100,58 @@ public class Load {
         params.add(new BasicNameValuePair("wady", review.getProductCons()));
         params.add(new BasicNameValuePair("przydatna", String.valueOf(review.getVotesYes())));
         params.add(new BasicNameValuePair("nieprzydatna", String.valueOf(review.getVotesNo())));
+
         try {
+            //set params
             httpPost.setEntity(new UrlEncodedFormEntity(params));
+
+            //connect to url
             CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            //get response from url
             str = EntityUtils.toString(response.getEntity());
 
             if(str.equals("Eh znowu :(")){
                 str = " TEN SIĘ ZEPSUŁ (UŻYŁBYM INNEGO SŁOWA)\r\n" + review.toString();
             }
+
             httpClient.close();
         }
         catch (IOException e){
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return str;
     }
 
-    public static String loadProduktyOpinie(Produkt product, Opinia review){
+    public static String loadProduktOpinia(Produkt product, Opinia review){
+        //load relation between product-review
         CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        //connection url
         HttpPost httpPost = new HttpPost("http://v-ie.uek.krakow.pl/~s187086/etl_insert_produkty_opinie.php");
+
         String str = "";
 
+        //create params
         List<NameValuePair> params = new ArrayList<NameValuePair>();
+
         params.add(new BasicNameValuePair("id_produktu", String.valueOf(product.getProductID())));
         params.add(new BasicNameValuePair("id_opinii", String.valueOf(review.getReviewID())));
+
         try {
+            //set params
             httpPost.setEntity(new UrlEncodedFormEntity(params));
+
+            //connect to url
             CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            //get response
             str = EntityUtils.toString(response.getEntity());
+
             httpClient.close();
         }
         catch (IOException e){
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return str;
     }

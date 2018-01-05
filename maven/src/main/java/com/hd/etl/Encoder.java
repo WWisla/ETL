@@ -5,6 +5,7 @@ package com.hd.etl;
  */
 public class Encoder {
     public static String replaceAllSymbols(String text) {
+        //replace forbidden characters with another
         text = text.replace("\"","");
         text = text.replace("~","");
         text = text.replace("@","");

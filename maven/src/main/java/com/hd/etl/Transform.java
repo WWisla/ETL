@@ -4,10 +4,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +15,7 @@ public class Transform {
     private static Produkt product;
 
     public static Produkt transform(Document document, long id){
+        //transform product info from html parsed document
         product = new Produkt(document, id);
 
         return product;
@@ -60,8 +58,6 @@ public class Transform {
                 }
             }
             fileService.print(xml.toString());
-
-            System.out.println("Zapisano do pliku " + fileName);
         }
         catch (IOException event){
             event.printStackTrace();
@@ -72,6 +68,7 @@ public class Transform {
     public static String transformToString(){
         StringBuilder result = new StringBuilder();
 
+        //save result of transform to file
         String fileName = "transform.xml";
 
         try{
@@ -94,6 +91,7 @@ public class Transform {
         }
 
         try{
+            //read from file encoded data
             FileService fileService = new FileService(fileName);
 
             result.append(fileService.encode());
