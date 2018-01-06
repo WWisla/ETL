@@ -64,19 +64,13 @@ public class Opinia {
 
         //recommending/not recommending product
         productRecommendation = review.select("em[class=product-recommended]").text();
+        if(productRecommendation.equals("")){
+            productRecommendation = review.select("em[class=product-not-recommended]").text();
+        }
 
         //get review votes (usefull/useless review)
         votesYes = Integer.valueOf(review.select("span[id^=votes-yes]").text());
         votesNo = Integer.valueOf(review.select("span[id^=votes-no]").text());
-
-        //clear variable capturing object toString
-        result.setLength(0);
-
-        //creating toString result for this object
-        result.append(reviewerName + " " + reviewDate + "\r\n");
-        result.append(reviewScore + "/5.0 " + productRecommendation + "\r\n");
-        result.append("✔ - " + votesYes + "\t X - " + votesNo + "\r\n");
-        result.append(reviewText + "\r\n");
     }
 
     public String outerHtml(){
@@ -85,6 +79,14 @@ public class Opinia {
     }
 
     public String toString(){
+        //clear variable capturing object toString
+        result.setLength(0);
+
+        //creating toString result for this object
+        result.append(reviewerName + " " + reviewDate + "\r\n");
+        result.append(reviewScore + "/5.0 " + productRecommendation + "\r\n");
+        result.append("✔ - " + votesYes + "\t X - " + votesNo + "\r\n");
+        result.append(reviewText + "\r\n");
 
         if(!productPros.isEmpty()) {
             result.append("Zalety:\r\n");

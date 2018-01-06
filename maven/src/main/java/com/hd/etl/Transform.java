@@ -100,65 +100,80 @@ public class Transform {
             e.printStackTrace();
         }
 
-        /**
-        //save result to file
-        try {
-            String fileName = "transform.xml";
+        return result.toString();
+    }
 
-            PrintWriter printWriter = new PrintWriter(fileName);
+    public static void exportDataToCSV(){
+        try {
+            String fileName = "temp/" + product.getProductID() +".csv";
+
+            FileService fileService = new FileService(fileName);
+
+            StringBuilder text = new StringBuilder();
+
+            text.append("\"Produkt\"");
+            text.append("\n");
+
+            text.append("\"ID produktu\";");
+            text.append("\"Rodzaj produktu\";");
+            text.append("\"Marka produktu\";");
+            text.append("\"Model\";");
+            text.append("\"Dodatkowe uwagi\";");
+            text.append("\n");
+
+            text.append("\""+ product.getProductID() + "\";");
+            text.append("\""+ product.getProductType() + "\";");
+            text.append("\""+ product.getBrand() + "\";");
+            text.append("\""+ product.getModel() + "\";");
+            text.append("\""+ product.getNotes() + "\";");
+            text.append("\n\n\n");
+
+            text.append("\"Opinie\";");
+            text.append("\n");
+
+            text.append("\"ID opinii\";");
+            text.append("\"Autor opinii\";");
+            text.append("\"Data wystawienia\";");
+            text.append("\"Ocena\";");
+            text.append("\"Rekomendacja\";");
+            text.append("\"Tresc opinii\";");
+            text.append("\"Zalety produktu\";");
+            text.append("\"Wady produktu\";");
+            text.append("\"Przydatna\";");
+            text.append("\"Nieprzydatna\";");
+            text.append("\n");
 
             for(Opinia review : reviews){
-                printWriter.print(review.toString());
-                if(!review.equals(reviews.get(reviews.size()-1))) {
-                    //2 new lines between each html code
-                    printWriter.print("\r\n\r\n\r\n");
-                }
+                text.append("\""+ review.getReviewID() + "\";");
+                text.append("\""+ review.getReviewerName() + "\";");
+                text.append("\""+ review.getReviewDate() + "\";");
+                text.append("\""+ review.getReviewScore() + "\";");
+                text.append("\""+ review.getProductRecommendation() + "\";");
+                text.append("\""+ review.getReviewText() + "\";");
+                text.append("\""+ review.getProductPros() + "\";");
+                text.append("\""+ review.getProductCons() + "\";");
+                text.append("\""+ review.getVotesYes() + "\";");
+                text.append("\""+ review.getVotesNo() + "\";");
+                text.append("\n");
             }
 
-            printWriter.close();
-        }
-        catch (FileNotFoundException e) {
+            fileService.print(text.toString());
+        } catch (IOException e) {
             e.printStackTrace();
         }
-         */
-        /**
-        try {
-            //connect file channel to enable fast load big files or containing
-            //a lot of signs to display it on GUI - without it loading is never ending story
-            Path path = Paths.get("transform.xml");
-            FileChannel fileChannel = FileChannel.open(path);
+    }
 
-            //allocate buffer - number of bytes in memory
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
-            int bytesRead = fileChannel.read(buffer);
+    public static void reviewToFile(){
+        for(Opinia review : reviews){
+            try{
+                String fileName = "temp/" + review.getReviewID() + ".txt";
 
-            //read file until end - end throw exception (-1)
-            while (bytesRead != -1) {
-                buffer.flip();
+                FileService fileService = new FileService(fileName);
 
-                //load signs one by one
-                while (buffer.hasRemaining()) {
-                    synchronized (buffer) {
-                        //load sign to string builder
-                        result.append((char) buffer.get());
-                        //CharBuffer cb = Charset.defaultCharset().decode(buffer);
-                        //result.append(cb.toString());
-                    }
-                }
-                //System.out.println(fileChannel.position());
-                //clear buffer - again allocated number and load again
-                buffer.clear();
-                bytesRead = fileChannel.read(buffer);
+                fileService.print(review.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            System.out.println("Transform:DONE");
-
-            //close file channel
-            fileChannel.close();
         }
-        catch (IOException event){
-            event.printStackTrace();
-        }
-        */
-        return result.toString();
     }
 }

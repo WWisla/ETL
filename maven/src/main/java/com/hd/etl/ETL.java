@@ -7,7 +7,6 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -18,7 +17,7 @@ public class ETL extends JFrame implements ActionListener{
     //GUI
     private JTextField productID;
     private JTextArea result;
-    private JButton extract, transform, load, etl, clearDataBase, exportCSV;
+    private JButton extract, transform, load, etl, clearDataBase, exportCSV, exportReviews;
     //etl variables
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
@@ -42,6 +41,7 @@ public class ETL extends JFrame implements ActionListener{
         etl = new JButton("ETL");
         clearDataBase = new JButton("Clear Data Base");
         exportCSV = new JButton("Export Data to CSV");
+        exportReviews = new JButton("Export reviews to files");
 
         //GUI panels
         JPanel searchPanel = new JPanel();
@@ -54,12 +54,14 @@ public class ETL extends JFrame implements ActionListener{
         load.addActionListener(this);
         etl.addActionListener(this);
         exportCSV.addActionListener(this);
+        exportReviews.addActionListener(this);
         clearDataBase.addActionListener(this);
 
         //button settings
         transform.setEnabled(false);
         load.setEnabled(false);
         exportCSV.setEnabled(false);
+        exportReviews.setEnabled(false);
 
         //result panel settings
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -81,6 +83,7 @@ public class ETL extends JFrame implements ActionListener{
         operationPanel.add(load);
         operationPanel.add(etl);
         operationPanel.add(exportCSV);
+        operationPanel.add(exportReviews);
         operationPanel.add(clearDataBase);
 
         //adding GUI panels to window
@@ -142,6 +145,24 @@ public class ETL extends JFrame implements ActionListener{
                 }
             }).run();
         }
+        //Export to CSV button action
+        if(e.getActionCommand().equals(exportCSV.getActionCommand())){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etlMethods.exportDataToCSV();
+                }
+            }).run();
+        }
+        //Export reviews button action
+        if(e.getActionCommand().equals(exportReviews.getActionCommand())){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etlMethods.exportReviewsToFiles();
+                }
+            }).run();
+        }
         //Clear Data Base action
         if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
             //TODO FINISH THIS METHOD
@@ -191,6 +212,8 @@ public class ETL extends JFrame implements ActionListener{
 
             //enable load
             load.setEnabled(true);
+            exportCSV.setEnabled(true);
+            exportReviews.setEnabled(true);
             return Transform.transformToString();
         }
 
@@ -211,6 +234,13 @@ public class ETL extends JFrame implements ActionListener{
                 i++;
             }
 
+            try {
+                FileService.deleteDir("temp");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            /**
             //deleting files after load
             File reviewsXML = new File("reviews.xml");
             File extractXML = new File("extract.xml");
@@ -222,10 +252,13 @@ public class ETL extends JFrame implements ActionListener{
             else {
                 System.out.println("ERROR");
             }
+             */
 
             //disable buttons
             transform.setEnabled(false);
             load.setEnabled(false);
+            exportCSV.setEnabled(false);
+            exportReviews.setEnabled(false);
 
             //clear etl variables
             reviews.clear();
@@ -237,6 +270,14 @@ public class ETL extends JFrame implements ActionListener{
         public String dropDataBase(){
             //clear all database - recreate empty database
             return Load.dropDataBase();
+        }
+
+        public void exportDataToCSV(){
+            Transform.exportDataToCSV();
+        }
+
+        public void exportReviewsToFiles(){
+            Transform.reviewToFile();
         }
     }
 }

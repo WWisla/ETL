@@ -1,5 +1,8 @@
 package com.hd.etl;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +22,24 @@ public class FileService {
         this.path = Paths.get(path);
     }
 
+    public static String createDir(String path){
+        File file = new File(path);
+        String str = "";
+
+        if(file.mkdir()){
+            str = path + " directory created.";
+        }
+        else {
+            str = "Cannot create temporary directory!";
+        }
+        return str;
+    }
+
+    public static String deleteDir(String path) throws IOException{
+        FileUtils.deleteDirectory(new File(path));
+        return "Temporary directory has been deleted.";
+    }
+
     public void print(String text) throws IOException{
         //write text to file
         PrintWriter printWriter = new PrintWriter(this.path.toString());
@@ -26,23 +47,6 @@ public class FileService {
         printWriter.print(text);
 
         printWriter.close();
-    }
-
-    public void write(String text) throws IOException{
-        //write text to file through file channel
-        byte[] bytes = text.getBytes();
-        FileOutputStream fileOutputStream = new FileOutputStream(path.toString());
-
-        FileChannel fileChannel = fileOutputStream.getChannel();
-
-        //load bytes to buffer
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-
-        //write buffer to file
-        fileChannel.write(buffer);
-
-        fileChannel.close();
-        fileOutputStream.close();
     }
 
     public String encode() throws IOException{

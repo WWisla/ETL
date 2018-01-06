@@ -41,6 +41,8 @@ public class Extract{
 
         String fileName = "temp/extract.xml";
 
+        FileService.createDir("temp");
+
         while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
             for (Element element : tempDoc.select("li")) {
                 //if next site link exist catch it to temporary element
