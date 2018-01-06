@@ -64,7 +64,7 @@ public class Produkt {
     public String toString(){
         StringBuilder product = new StringBuilder();
 
-        product.append(productID + "\r\n");
+        product.append("Produkt: " + productID + "\r\n");
         product.append(productType + " -> " + brand + "\r\n");
         product.append(model + "\r\n");
         product.append(notes + "\r\n\r\n\r\n");

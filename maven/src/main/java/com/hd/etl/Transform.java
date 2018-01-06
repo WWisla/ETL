@@ -102,6 +102,8 @@ public class Transform {
             e.printStackTrace();
         }
 
+        result.append("\r\n\r\n Produkt zawiera: " + reviews.size() + " opinii.\r\n");
+
         return result.toString();
     }
 
