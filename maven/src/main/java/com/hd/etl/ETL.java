@@ -206,6 +206,9 @@ public class ETL extends JFrame implements ActionListener{
             //enable transform
             transform.setEnabled(true);
             load.setEnabled(false);
+            exportCSV.setEnabled(false);
+            exportReviews.setEnabled(false);
+            
             return Extract.extractToString();
         }
 
