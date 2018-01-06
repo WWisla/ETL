@@ -141,7 +141,6 @@ public class ETL extends JFrame implements ActionListener{
         }
         //ETL button action
         if(e.getActionCommand().equals(etl.getActionCommand())){
-            //TODO FINISH THIS METHOD
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -223,58 +222,7 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String load(){
-            String str = "Dodawanie do bazy danych zakończone.\r\n\r\n";
-            //Try load product to database
-            if(Load.loadProdukt(product).equals("Brawo :)")){
-                str += "Dodano nowy wiersz do tabeli etl_produkty.\r\n";
-            }
-            else{
-                str += "Nie udało dodać się wiersza do tabeli etl_produkty.\r\n";
-                str += "Sprawdź czy produkt już nie istnieje w bazie danych.\r\n\r\n";
-            }
-
-            int addedReviews = 0;
-            int addedRelations = 0;
-            int notAddedReviews = 0;
-            int notAddedRelations = 0;
-            for(Opinia review : reviews){
-                if(Load.loadOpinia(review).equals("Brawo :)")){
-                    addedReviews++;
-                }
-                else {
-                    notAddedReviews++;
-                }
-                //try load relation between product-review to database
-                if(Load.loadProduktOpinia(product, review).equals("Brawo :)")){
-                    addedRelations++;
-                }
-                else {
-                    notAddedRelations++;
-                }
-            }
-
-            if(notAddedReviews == 0) {
-                str += "Dodano " + addedReviews + " wierszy do tabeli etl_opinie.\r\n";
-            }
-            else {
-                str += "Dodano " + addedReviews + " wierszy do tabeli etl_opinie.\r\n";
-                str+= "Nie dodano " + notAddedReviews + " wierszy do tabeli etl_opinie.\r\n\r\n";
-            }
-
-            if (notAddedRelations == 0) {
-                str += "Dodano " + addedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n";
-            }
-            else {
-                str += "Dodano " + addedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n";
-                str+= "Nie dodano " + notAddedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n\r\n";
-            }
-
-            try {
-                FileService.deleteDir("temp");
-                str += "Usunięto pliki tymczasowe.\r\n";
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String str = Load.load(product,reviews);
 
             //disable buttons
             transform.setEnabled(false);

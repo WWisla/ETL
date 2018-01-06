@@ -11,12 +11,8 @@ public class Produkt {
     private String brand;
     private String model;
     private String notes;
-    //contain full element
-    private Document product;
 
     public Produkt(Document product, long id){
-        this.product = product;
-
         //get product id
         productID = id;
 
@@ -31,14 +27,6 @@ public class Produkt {
 
         //get product notes
         notes = product.select("div[class=ProductSublineTags]").text();
-
-        /**
-        System.out.println(productID);
-        System.out.println(productType);
-        System.out.println(brand);
-        System.out.println(model);
-        System.out.println(notes);
-         */
     }
 
     public long getProductID() {
