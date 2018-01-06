@@ -43,7 +43,7 @@ public class Transform {
 
         try {
             //create new file for opinions
-            String fileName = "reviews.xml";
+            String fileName = "temp/reviews.xml";
 
             FileService fileService = new FileService(fileName);
 
@@ -69,7 +69,7 @@ public class Transform {
         StringBuilder result = new StringBuilder();
 
         //save result of transform to file
-        String fileName = "transform.xml";
+        String fileName = "temp/transform.xml";
 
         try{
             FileService fileService = new FileService(fileName);

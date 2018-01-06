@@ -39,7 +39,7 @@ public class Extract{
         //add to list of documents from this extract
         docList.add(doc);
 
-        String fileName = "extract.xml";
+        String fileName = "temp/extract.xml";
 
         while (tempDoc.select("li").hasClass("page-arrow arrow-next")){
             for (Element element : tempDoc.select("li")) {

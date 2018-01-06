@@ -18,7 +18,7 @@ public class ETL extends JFrame implements ActionListener{
     //GUI
     private JTextField productID;
     private JTextArea result;
-    private JButton extract, transform, load, etl, clearDataBase;
+    private JButton extract, transform, load, etl, clearDataBase, exportCSV;
     //etl variables
     private ArrayList<Document> docList = new ArrayList<Document>();
     private ArrayList<Opinia> reviews = new ArrayList<Opinia>();
@@ -41,6 +41,7 @@ public class ETL extends JFrame implements ActionListener{
         load = new JButton("Load");
         etl = new JButton("ETL");
         clearDataBase = new JButton("Clear Data Base");
+        exportCSV = new JButton("Export Data to CSV");
 
         //GUI panels
         JPanel searchPanel = new JPanel();
@@ -52,11 +53,13 @@ public class ETL extends JFrame implements ActionListener{
         transform.addActionListener(this);
         load.addActionListener(this);
         etl.addActionListener(this);
+        exportCSV.addActionListener(this);
         clearDataBase.addActionListener(this);
 
         //button settings
         transform.setEnabled(false);
         load.setEnabled(false);
+        exportCSV.setEnabled(false);
 
         //result panel settings
         resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -77,6 +80,7 @@ public class ETL extends JFrame implements ActionListener{
         operationPanel.add(transform);
         operationPanel.add(load);
         operationPanel.add(etl);
+        operationPanel.add(exportCSV);
         operationPanel.add(clearDataBase);
 
         //adding GUI panels to window
