@@ -76,6 +76,8 @@ public class Transform {
 
             StringBuilder xml = new StringBuilder();
 
+            xml.append(product.toString());
+
             for(Opinia review : reviews){
                 xml.append(review.toString());
                 if(!review.equals(reviews.get(reviews.size()-1))) {

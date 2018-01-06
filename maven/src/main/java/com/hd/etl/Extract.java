@@ -89,6 +89,8 @@ public class Extract{
             event.printStackTrace();
         }
 
+        html.append("\r\n\r\n Pobrano: " + docList.size() + " dokumentów HTML zawierających opinie.");
+
         return docList;
     }
 

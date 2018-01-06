@@ -75,6 +75,12 @@ public class ETL extends JFrame implements ActionListener{
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         resultPanel.setViewportView(result);
 
+        //default welcome result text
+        result.append("Witaj! \r\n\r\n");
+        result.append("Ten program pozwoli Ci pobierać informacje o produkcie oraz ");
+        result.append("opinie użytkowników o nim z witryny Ceneo.pl.\r\n\r\n\r\n");
+        result.append("UWAGA: pobieranie dużych ilości opinii może potrwać chwilkę lub dwie. Prosimy o cierpliwość :)\r\n");
+
         //adding GUI components to panels
         searchPanel.add(new JLabel("Product ID:"));
         searchPanel.add(productID);
@@ -141,7 +147,7 @@ public class ETL extends JFrame implements ActionListener{
                 public void run() {
                     etlMethods.extract();
                     etlMethods.transform();
-                    etlMethods.load();
+                    result.setText(etlMethods.load());
                 }
             }).run();
         }
@@ -165,11 +171,10 @@ public class ETL extends JFrame implements ActionListener{
         }
         //Clear Data Base action
         if(e.getActionCommand().equals(clearDataBase.getActionCommand())){
-            //TODO FINISH THIS METHOD
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    result.append(etlMethods.dropDataBase() + "\n");
+                    result.append("\r\n" + etlMethods.dropDataBase() + "\r\n");
                 }
             }).run();
         }
@@ -206,7 +211,7 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String transform(){
-            //get all reviews and product infor
+            //get all reviews and product info
             reviews = Transform.transform(docList);
             product = Transform.transform(docList.get(0), id);
 
@@ -218,41 +223,58 @@ public class ETL extends JFrame implements ActionListener{
         }
 
         public String load(){
-            //TODO FINISH THIS METHOD
+            String str = "Dodawanie do bazy danych zakończone.\r\n\r\n";
             //Try load product to database
-            System.out.println();
-            System.out.println("Produkt: " + Load.loadProdukt(product));
-            System.out.println();
+            if(Load.loadProdukt(product).equals("Brawo :)")){
+                str += "Dodano nowy wiersz do tabeli etl_produkty.\r\n";
+            }
+            else{
+                str += "Nie udało dodać się wiersza do tabeli etl_produkty.\r\n";
+                str += "Sprawdź czy produkt już nie istnieje w bazie danych.\r\n\r\n";
+            }
 
-            int i = 1;
+            int addedReviews = 0;
+            int addedRelations = 0;
+            int notAddedReviews = 0;
+            int notAddedRelations = 0;
             for(Opinia review : reviews){
-                System.out.println(i);
-                //try load review to database
-                System.out.println("Opinia: " + Load.loadOpinia(review));
+                if(Load.loadOpinia(review).equals("Brawo :)")){
+                    addedReviews++;
+                }
+                else {
+                    notAddedReviews++;
+                }
                 //try load relation between product-review to database
-                System.out.println("Produkt-Opinia: " + Load.loadProduktOpinia(product, review));
-                i++;
+                if(Load.loadProduktOpinia(product, review).equals("Brawo :)")){
+                    addedRelations++;
+                }
+                else {
+                    notAddedRelations++;
+                }
+            }
+
+            if(notAddedReviews == 0) {
+                str += "Dodano " + addedReviews + " wierszy do tabeli etl_opinie.\r\n";
+            }
+            else {
+                str += "Dodano " + addedReviews + " wierszy do tabeli etl_opinie.\r\n";
+                str+= "Nie dodano " + notAddedReviews + " wierszy do tabeli etl_opinie.\r\n\r\n";
+            }
+
+            if (notAddedRelations == 0) {
+                str += "Dodano " + addedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n";
+            }
+            else {
+                str += "Dodano " + addedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n";
+                str+= "Nie dodano " + notAddedRelations + " wierszy do tabeli etl_produkty_opinie.\r\n\r\n";
             }
 
             try {
                 FileService.deleteDir("temp");
+                str += "Usunięto pliki tymczasowe.\r\n";
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            /**
-            //deleting files after load
-            File reviewsXML = new File("reviews.xml");
-            File extractXML = new File("extract.xml");
-            File transformXML = new File("transform.xml");
-
-            if(reviewsXML.delete() && extractXML.delete() && transformXML.delete()){
-                System.out.println("TEMPORARY FILES HAS BEEN DELETED");
-            }
-            else {
-                System.out.println("ERROR");
-            }
-             */
 
             //disable buttons
             transform.setEnabled(false);
@@ -264,7 +286,7 @@ public class ETL extends JFrame implements ActionListener{
             reviews.clear();
             docList.clear();
 
-            return "Zrobione";
+            return str;
         }
 
         public String dropDataBase(){
